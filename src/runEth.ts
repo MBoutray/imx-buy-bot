@@ -25,6 +25,7 @@ const provider = new AlchemyProvider('mainnet', '0BZjuaH8NIoewLDSzZRTiRPav7IhD8r
         .then(response => {
             let result = response.data.result
 
+            // @ts-ignore
             if (result === []) {
                 console.log(new Date().toLocaleString() + 'Any result in ETH')
 
@@ -41,65 +42,81 @@ const provider = new AlchemyProvider('mainnet', '0BZjuaH8NIoewLDSzZRTiRPav7IhD8r
             let floorSecond = result[1]
             let quantityFloorSecond = floorSecond.buy.data.quantity
             let decimalsFloorSecond = floorSecond.buy.data.decimals
-            let priceFloorSecond = quantityFloorSecond / Math.pow(10, decimalsFloorSecond)
+            let priceFloorSecond =
+                quantityFloorSecond / Math.pow(10, decimalsFloorSecond)
             let halfPriceFloorSecond = priceFloorSecond / 2
 
             if (priceFloor < halfPriceFloorSecond) {
                 console.log('------------------------')
-                console.log(new Date().toLocaleString() + ' --- Something to buy')
+                console.log(
+                    new Date().toLocaleString() + ' --- Something to buy'
+                )
                 console.log('------------------------')
 
                 const data = {
-                    "user": publicKey,
-                    "token_sell": {
-                        "type": "ETH",
-                        "data": {
-                            "decimals": 18
-                        }
+                    user: publicKey,
+                    token_sell: {
+                        type: 'ETH',
+                        data: {
+                            decimals: 18,
+                        },
                     },
-                    "amount_sell": quantityFloor.toString(),
-                    "token_buy": {
-                        "type": "ERC721",
-                        "data": {
-                            "token_id": tokenId,
-                            "token_address": '0x9e0d99b864e1ac12565125c5a82b59adea5a09cd'
-                        }
+                    amount_sell: quantityFloor.toString(),
+                    token_buy: {
+                        type: 'ERC721',
+                        data: {
+                            token_id: tokenId,
+                            token_address:
+                                '0x9e0d99b864e1ac12565125c5a82b59adea5a09cd',
+                        },
                     },
-                    "amount_buy": "1",
-                    "include_fees": true
+                    amount_buy: '1',
+                    include_fees: true,
                 }
 
-                axios.post('https://api.x.immutable.com/v1/signable-order-details', data)
-                    .then(response => {
-                        const payload: ImmutableMethodParams.ImmutableGetSignableTradeParamsTS = {
-                            user: publicKey,
-                            amountBuy: BigNumber.from('1'),
-                            amountSell: BigNumber.from(quantityFloor.toString()),
-                            include_fees: true,
-                            orderId: orderId,
-                            expiration_timestamp: response.data.expiration_timestamp,
-                            tokenBuy: {
-                                type: ERC721TokenType.ERC721,
-                                data: {
-                                    tokenId: tokenId,
-                                    tokenAddress: '0x9e0d99b864e1ac12565125c5a82b59adea5a09cd'
-                                }
-                            },
-                            tokenSell: {
-                                type: ETHTokenType.ETH,
-                                data: {
-                                    decimals: 18
-                                }
+                axios
+                    .post(
+                        'https://api.x.immutable.com/v1/signable-order-details',
+                        data
+                    )
+                    .then((response) => {
+                        const payload: ImmutableMethodParams.ImmutableGetSignableTradeParamsTS =
+                            {
+                                user: publicKey,
+                                amountBuy: BigNumber.from('1'),
+                                amountSell: BigNumber.from(
+                                    quantityFloor.toString()
+                                ),
+                                include_fees: true,
+                                orderId: orderId,
+                                expiration_timestamp:
+                                    response.data.expiration_timestamp,
+                                tokenBuy: {
+                                    type: ERC721TokenType.ERC721,
+                                    data: {
+                                        tokenId: tokenId,
+                                        tokenAddress:
+                                            '0x9e0d99b864e1ac12565125c5a82b59adea5a09cd',
+                                    },
+                                },
+                                tokenSell: {
+                                    type: ETHTokenType.ETH,
+                                    data: {
+                                        decimals: 18,
+                                    },
+                                },
                             }
-                        };
-                        user.createTrade(payload).then(result => {
-                            console.log(result);
+                        user.createTrade(payload).then((result) => {
+                            console.log(result)
                         })
-                    }).catch(error => {
-                    console.log(error.message);
-                });
+                    })
+                    .catch((error) => {
+                        console.log(error.message)
+                    })
             } else {
-                console.log(new Date().toLocaleString() + ' --- Nothing to buy in ETH')
+                console.log(
+                    new Date().toLocaleString() + ' --- Nothing to buy in ETH'
+                )
             }
         })
         .catch(error => {

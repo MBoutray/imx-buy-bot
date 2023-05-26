@@ -22,5 +22,10 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_KEY }}
                   script: |
-                    cd /var/www/html/imx-buy-bot/
-                    git pull origin master
+                      cd /var/www/html/imx-buy-bot/
+                      git pull origin master
+                      npm install
+                      pm2 delete all
+                      pm2 start "npm run --silent buy-eth >> /home/mboutray/logs/buy-eth.log"
+                      pm2 start "npm run --silent buy-imx >> /home/mboutray/logs/buy-imx.log"
+                      pm2 start "npm run --silent buy-usdc >> /home/mboutray/logs/buy-usdc.log"
